@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "822144194459",
+    "project_id": "dinker-e2834",
+    "storage_bucket": "dinker-e2834.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822144194459:android:115829d23fdd1b8c08333e",
+        "android_client_info": {
+          "package_name": "com.example.dinker_2023_12"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfHlMEbWpL_Q3H1YlqowBbASWLgeP_rSU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
