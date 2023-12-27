@@ -1,7 +1,16 @@
+import 'package:dinker_2023_12/view/brand.dart';
+import 'package:dinker_2023_12/view/myPage.dart';
+import 'package:dinker_2023_12/view/search.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'firebase_options.dart';
 import 'view/home.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -20,8 +29,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const HomePage(),
         '/brand': (context) => const BrandPage(),
-        '/search': (context) => const SearchPage(),
-        '/myPage': (context) => const MyPage(),
+        '/search': (context) => SearchPage(),
+        '/myPage': (context) => MyPage(),
       }
     );
   }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../notice.dart';
+import '../setting.dart';
+
 class UpperBar extends StatelessWidget {
   const UpperBar({super.key});
 

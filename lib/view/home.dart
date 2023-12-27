@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-import '../controller/image.dart';
+import 'brand.dart';
 import 'shared/bottomBar.dart';
 import 'shared/upperBar.dart';
 
@@ -56,12 +56,11 @@ class ImageSlider extends StatelessWidget {
   final List imgList;
   final List imgNameList;
 
-  ImageSlider({
+  const ImageSlider({
     super.key,
     required this.imgList, required this.imgNameList
   });
 
-  ImageController imgController = ImageController();
   @override
   Widget build(BuildContext context) {
     int i=0;
@@ -72,10 +71,7 @@ class ImageSlider extends StatelessWidget {
         .map((item) => IconButton(
           icon: item,
           onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => imgController.findPage(imgNameList[++i]))
-            );
+            MenuItemPage(menuItem: item);
           }
       )).toList(),
     );

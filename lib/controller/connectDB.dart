@@ -40,7 +40,7 @@ class ConnectDBController {
     ifNew TEXT NOT NULL,
     name TEXT NOT NULL,
     content TEXT NOT NULL,
-    category TEXT NOT NULL,
+    cate TEXT NOT NULL,
     imgPath TEXT NOT NULL,
     kcal INT NOT NULL,
     sat_fat INT NOT NULL,

@@ -10,6 +10,6 @@ class User {
     required this.email,
     required this.password,
     required this.ifLogin,
-    required this.ifSubStarbucks
+    required this.ifSubStarbucks,
   });
 }
