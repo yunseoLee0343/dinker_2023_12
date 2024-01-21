@@ -1,3 +1,4 @@
+
 class Brand {
   final int id;
   final String brandName;

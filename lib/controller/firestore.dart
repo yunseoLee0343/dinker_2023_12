@@ -8,35 +8,86 @@ class FireStoreController {
   final FirebaseController _firebaseController = FirebaseController();
 
   Future<void> createFireStore() async {
-    var query = {"userId": "0", "name":"sample"};
-    await db.collection('favItems').add(query);
+    final favMenus = <String, String> {
+      "menuName": "sample",
+    };
+    final favBrands = <String, String> {
+      "brandName": "sample",
+    };
+
+    db
+        .collection("user")
+        .doc(_firebaseController.getUserId())
+        .collection("favMenus")
+        .doc("sample")
+        .set(favMenus)
+        .onError((e, _) => print("Error writing document: $e"));
+
+    db
+        .collection("user")
+        .doc(_firebaseController.getUserId())
+        .collection("favBrands")
+        .doc("sample")
+        .set(favBrands)
+        .onError((e, _) => print("Error writing document: $e"));
   }
 
-  Future<void> addFav(String name) async {
-    var docRef = db.collection('favItems').doc();
-    var query = {"userId":_firebaseController.getUserId(), "name":name};
-    await docRef.set(query).then(
-        (value) => log("Fav added successfully!"),
-        onError: (e) => log("Error fav adding: $e"));
+  Future<void> addFav(String collectionName, String name, Map<String, String> favItem) async {
+    db
+        .collection("user")
+        .doc(_firebaseController.getUserId())
+        .collection(collectionName)
+        .doc(name)
+        .set(favItem).then(
+            (doc) => log("Document added"),
+            onError: (e) => log("Error writing document: $e"),
+        );
   }
 
-  Future<List<FireModel>> getAllFav() async {
-    CollectionReference<Map<String, dynamic>> collectionReference = FirebaseFirestore.instance.collection("favItems");
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await collectionReference.get();
-    List<FireModel> models = [];
-    for (var doc in querySnapshot.docs) {
-      FireModel fireModel = FireModel.fromQuerySnapshot(doc);
-      models.add(fireModel);
+  Future<void> removeFav(String collectionName, String name) async {
+    db
+        .collection("user")
+        .doc(_firebaseController.getUserId())
+        .collection(collectionName)
+        .doc(name)
+        .delete().then(
+          (doc) => log("Document deleted"),
+          onError: (e) => log("Error updating document $e"),
+    );
+  }
+
+  Future<List<String>> getFav(String collectionName, String userId) async {
+    List<String> menuNames = [];
+
+    await db.collection("user").doc(userId).collection(collectionName).get().then(
+          (querySnapshot) {
+        for (var docSnapshot in querySnapshot.docs) {
+          var map = docSnapshot.data();
+          map.forEach((k, v) => menuNames.add(v));
+        }
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+    return menuNames;
+  }
+
+  Future<bool> checkAlreadyExist(String collectionName, String name) async {
+    String? userId = _firebaseController.getUserId();
+
+    if(userId == "Cannot find current user") {
+      return false;
     }
-    return models;
-  }
 
-  Future<List> getFav(String userId) async {
-    List<FireModel> models = await getAllFav();
-    List result=[];
-    models.forEach((element) {
-      if(element.userId==userId) result.add(element.favList);
-    });
+    List<String> favItems = await getFav(collectionName, userId);
+    if(favItems.isEmpty) {
+      return false;
+    }
+
+    bool result = false;
+
+    for (String s in favItems!) {
+      if (s == name) return true;
+    }
     return result;
   }
 }

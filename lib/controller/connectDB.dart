@@ -1,35 +1,49 @@
 import 'dart:async';
-import 'dart:async';
 
+import 'package:dinker_2023_12/controller/controlDB.dart';
+import 'package:dinker_2023_12/controller/fetch.dart';
+import 'package:dinker_2023_12/model/fetch/originMenu.dart';
+import 'package:dinker_2023_12/model/menuItem.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ConnectDBController {
-  late Database drinkDB;
-  late Database sessionDB;
+  static late Database drinkDB;
+  ControlDBController controlDBController = ControlDBController();
 
   Database getDrinkDB() {
     return drinkDB;
   }
-  Database getSessionDB() {
-    return sessionDB;
+
+  Future<void> deleteDB(String path) async {
+    await deleteDatabase(path);
   }
 
   Future<void> connectSqflite() async {
+    var path1 = await getDatabasesPath();
     drinkDB = await openDatabase(
-      join(await getDatabasesPath(), 'drink.db'),
+      join(path1, 'drink.db'),
     );
-    sessionDB = await openDatabase(
-      join(await getDatabasesPath(), 'session.db'),
-    );
-    await initialCreate(drinkDB, sessionDB);
+
+    await initialCreate();
+    await insertInitial("https://www.starbucks.co.kr/upload/json/menu/W0000171.js");
+    await insertInitial("https://www.starbucks.co.kr/upload/json/menu/W0000060.js");
+    await insertInitial("https://www.starbucks.co.kr/upload/json/menu/W0000003.js");
+    await insertInitial("https://www.starbucks.co.kr/upload/json/menu/W0000004.js");
+    await insertInitial("https://www.starbucks.co.kr/upload/json/menu/W0000005.js");
+    await insertInitial("https://www.starbucks.co.kr/upload/json/menu/W0000422.js");
+    await insertInitial("https://www.starbucks.co.kr/upload/json/menu/W0000061.js");
+    await insertInitial("https://www.starbucks.co.kr/upload/json/menu/W0000075.js");
+    await insertInitial("https://www.starbucks.co.kr/upload/json/menu/W0000053.js");
+    await insertInitial("https://www.starbucks.co.kr/upload/json/menu/W0000062.js");
+    await insertInitial("https://www.starbucks.co.kr/upload/json/menu/W0000471.js");
   }
 
-  Future<void> initialCreate(Database drinkDB, Database sessionDB) async {
+  Future<void> initialCreate() async {
     await drinkDB.execute(
         '''CREATE TABLE Brands (
       id INTEGER PRIMARY KEY,
-      brandName TEXT NOT NULL
+      brandName TEXT NOT NULL );
     '''
     );
 
@@ -47,17 +61,27 @@ class ConnectDBController {
     protein INT NOT NULL,
     sodium INT NOT NULL,
     caffeine INT NOT NULL,
-    sugars INT NOT NULL'''
+    sugars INT NOT NULL );'''
     );
+  }
 
-    await sessionDB.execute(
-        '''CREATE TABLE Users(
-    id INTEGER PRIMARY KEY,
-    email TEXT NOT NULL,
-    password TEXT NOT NULL,
-    ifLogin TEXT,
-    ifSubStarbucks TEXT
-    '''
-    );
+  Future<void> insertInitial(String url) async {
+    FetchController fetchController = FetchController();
+    await controlDBController.insertBrand(drinkDB, "starbucks");
+    List<OriginMenu>? originMenus=[];
+    List<MenuItem> menuItems=[];
+    originMenus = await fetchController.fetchData(url);
+    originMenus?.forEach((element) {
+      var data = fetchController.convert(element);
+      menuItems.add(data);
+    });
+    menuItems.forEach((element) async {
+      await controlDBController.insertMenuItem(drinkDB, element);
+    });
+
+    menuItems.forEach((elment) async {
+      await controlDBController.fixCate(drinkDB);
+    });
+
   }
 }
